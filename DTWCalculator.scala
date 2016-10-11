@@ -1,5 +1,5 @@
-def DTWCalculator(A: Array[MDVector], B: Array[MDVector], cb: Array[Double], window_size: Int, bsf: Double) = {
-	def min(a: Double, b: Double): Double = scala.math.min(a, b)
+def DTWCalculator[T](dist: (T, T) => Double)(A: Array[T], B: Array[T], cb: Array[Double], window_size: Int, bsf: Double): Double = {
+	import scala.math.{min, max}
 	val INF: Double = scala.Double.MaxValue
 	val m: Int = A.length
 	val r: Int = min(window_size, m-1)
@@ -29,3 +29,13 @@ def DTWCalculator(A: Array[MDVector], B: Array[MDVector], cb: Array[Double], win
 	}
 	cost(r)
 }
+
+// test case
+// note that A and B must have the same length because we use the cummulative bound obtained from LBKeogh
+val A = Array(1, 1, 2, 3, 2, 0)
+val B = Array(0, 1, 1, 2, 3, 2)
+val cb = Array.ofDim[Double](a.length)
+val window_size = 6
+val bsf = scala.Double.MaxValue
+val dist = (a: Int, b: Int) => ((a - b) * (a - b)).toDouble
+DTWCalculator(dist)(A, B, cb, window_size, bsf)
