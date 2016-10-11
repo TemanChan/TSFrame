@@ -12,7 +12,7 @@
  */
 def LBKoegh(candidate: Array[MDVector], start_index: Int, order: Array[Int], upper_ordered: Array[MDVector], lower_ordered: Array[MDVector], mean: MDVector, std: MDVector, bsf: Double): Double = {
     val len: Int = candidate.length
-    val cb: Array[MDVector] = Array.ofDim[MDVector](len)
+    val cb: Array[Double] = Array.ofDim[Double](len)
     var lb: Double = 0
     var i: Int = 0
     while(i < len && lb < bsf){
@@ -42,7 +42,7 @@ def LBKoegh(candidate: Array[MDVector], start_index: Int, order: Array[Int], upp
  */
 def LBKoegh2(upper: Array[MDVector], lower: Array[MDVector], query_ordered: Array[MDVector], order: Array[Int], mean: MDVector, std: MDVector, bsf: Double): Double = {
     val len: Int = upper.length
-    val cb: Array[MDVector] = Array.ofDim[MDVector](len)
+    val cb: Array[Double] = Array.ofDim[Double](len)
     var lb: Double = 0
     var i: Int = 0
     while(i < len && lb < bsf){
@@ -55,7 +55,7 @@ def LBKoegh2(upper: Array[MDVector], lower: Array[MDVector], query_ordered: Arra
             case _ => 0
         }
         lb += d
-        cb(i) = d
+        cb(order(i)) = d
         i += 1
     }
     (cb, lb)
