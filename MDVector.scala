@@ -30,6 +30,10 @@ class MDVector(val _values: Array[Double]){ //Bug of Zeppelin or Spark? Error if
         new MDVector((_values, that._values).zipped.map(_ / _))
     }
 
+    def /(d: Double): MDVector = {
+        new MDVector(_values.map(_ / d))
+    }
+
     // update this vector
     def +=(that: MDVector): MDVector = {
         require(_values.size == that._values.size, "vector dimensions must match")
