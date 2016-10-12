@@ -1,3 +1,5 @@
+package tsframe
+
 class MDVector(val _values: Array[Double]){ //Bug of Zeppelin or Spark? Error if the left curly bracket { is placed at the next line
     def this(size: Int) = this(Array.ofDim[Double](size))
 

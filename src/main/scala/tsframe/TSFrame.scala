@@ -1,21 +1,12 @@
-﻿class OrderedQuery(val query: Array[MDVector]){
-    val mean: MDVector = query.reduce(_ + _) / query.length
-    val variance: MDVector = query.map(x => x * x).reduce(_ + _) / query.length - mean * mean
-    val std: MDVector = variance.sqrt()
-    val query_norm: Array[MDVector] = query.map(x => (x - mean) / std)
-    val (query_ordered: Array[MDVector], order: Array[Int]) = 
-        query_norm.zipWithIndex.sortWith{ (left, right) => left._1 > right._1 }.unzip
-}
+﻿package tsframe
+
+import tsframe.DTW._
 
 class TSFrame(data: DataFrame) extends java.io.Serializable
 {
     def repartition(n: Int) = ???
     def normalize(x: MDVector, mean: MDVector, std: MDVector): MDVector = (x - mean) / std
     def dist(a: MDVector, b: MDVector): Double = (a - b).magnitudeSquared
-    def LBKim(candidate: Array[MDVector], start_index: Int, query: Array[MDVector], mean: MDVector, std: MDVector, bsf: Double) = ???
-    def envolope(query: DataFrame, window_size: Int): (upper: Array[MDVector], lower: Array[MDVector])
-    def LBKoegh(candidate: Array[MDVector], start_index: Int, upper: Array[MDVector], lower: Array[MDVector], mean: MDVector, std: MDVector, bsf: Double) = ???
-    def LBKoegh2(candidate: Array[MDVector], start_index: Int, query: Array[MDVector], mean: MDVector, std: MDVector, bsf: Double) = ???/.
     def toVector(row: Row): MDVector = ???
     def DTW(query: DataFrame, window_size: Int): (Long, Double) =  {
         val q: OrderedQuery = new OrderedQuery(query)
@@ -26,7 +17,6 @@ class TSFrame(data: DataFrame) extends java.io.Serializable
         // retrieve bsf from the parameter server
         // return (starting index of nearest candidate, distance)
     }
-    def DTWCalculator(buffer: Array[MDVector], start_index: Int, query: Array[MDVector], mean: MDVector, std: MDVector, bsf: Double): Double = ???
     def sequentialDTW(it: Iterator[Row], query_ordered: Array[MDVector], order: Array[Int], upper: Array[MDVector], lower: Array[MDVector], window_size: Int): Unit = {
         val local_bsf: Double = scala.Double.MaxValue
         // a circular array used to store the current candidate
