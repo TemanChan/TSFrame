@@ -32,6 +32,7 @@ class CircularBuffer[T : reflect.ClassTag](val _capacity: Int){
     def popFront(): Unit = {
         require(size > 0, "Index out of boundary")
         _first += 1
+        if(_first == _capacity) _first = 0
         size -= 1
     }
     def front(): T = {

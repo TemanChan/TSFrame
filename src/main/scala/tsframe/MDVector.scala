@@ -1,6 +1,9 @@
 package tsframe
 
-class MDVector(val _values: Array[Double]){ //Bug of Zeppelin or Spark? Error if the left curly bracket { is placed at the next line
+class MDVector(val _values: Array[Double]) extends Ordered[MDVector] { // Bug of Zeppelin or Spark? Error if the left curly bracket { is placed at the next line
+    val dimension: Int = _values.length
+
+    def this(values: Double*) = this(values.toArray)
     def this(size: Int) = this(Array.ofDim[Double](size))
 
     def apply(index: Int): Double = _values(index)
@@ -48,6 +51,7 @@ class MDVector(val _values: Array[Double]){ //Bug of Zeppelin or Spark? Error if
         this
     }
 
+    /*
     // return true iff the magnitude of this vector is less than the magnitude of that vector
     def <(that: MDVector): Boolean = {
         require(_values.size == that._values.size, "vector dimensions must match")
@@ -55,6 +59,11 @@ class MDVector(val _values: Array[Double]){ //Bug of Zeppelin or Spark? Error if
     }
 
     def >(that: MDVector): Boolean = that < this
+    */
+    def compare(that: MDVector): Int = {
+        require(_values.size == that._values.size, "vector dimensions must match")
+        _values.fold(0.0){ case (accu, x) => accu + x * x } compare that._values.fold(0.0){ case (accu, x) => accu + x * x }
+    }
 
     // return a new vector
     def sqrt(): MDVector = {
@@ -67,3 +76,4 @@ class MDVector(val _values: Array[Double]){ //Bug of Zeppelin or Spark? Error if
 
     def magnitudeSquared: Double = _values.map(x => x * x).reduce(_ + _)
 }
+
