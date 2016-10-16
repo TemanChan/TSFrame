@@ -1,8 +1,9 @@
 package tsframe
 
-object DTW {
+import scala.math.{min, max}
+
+object DTW extends java.io.Serializable {
     def SimpleDTW[T](dist: (T, T) => Double)(A: Array[T], B: Array[T]): Double = {
-        import scala.math.min
         val costs: Array[Array[Double]] = Array.ofDim[Double](A.length, B.length)
         for(i <- 0 until A.length;
             j <- 0 until B.length){
@@ -22,7 +23,6 @@ object DTW {
     }
     
     def DTWCalculator[T](dist: (T, T) => Double)(A: Array[T], B: Array[T], cb: Array[Double], window_size: Int, bsf: Double): Double = {
-        import scala.math.{min, max}
         val INF: Double = scala.Double.MaxValue
         val m: Int = A.length
         val r: Int = min(window_size, m-1)
@@ -95,8 +95,7 @@ object DTW {
         (upper, lower)
     }
 
-    def LBKim(candidate: Array[MDVector], start_index: Int, query: Array[MDVector], mean: MDVector, std: MDVector, bsf: Double) = {
-
+    def LBKim(dist: (MDVector, MDVector) => Double)(candidate: Array[MDVector], start_index: Int, query: Array[MDVector], mean: MDVector, std: MDVector, bsf: Double): Double = {
         def min(a: Double, b: Double) = scala.math.min(a, b)
         def normalize(x: MDVector) = (x - mean) / std
 
@@ -110,23 +109,23 @@ object DTW {
         if (lb < bsf) {
             // 2 points at front
             val x1: MDVector = normalize(candidate(start_index + 1))
-            val d: Double = Array(dist(x1, query(0)), dist(x0, query(1)), dist(x1, query(1))).reduce(min)
+            val d: Double = Array[Double](dist(x1, query(0)), dist(x0, query(1)), dist(x1, query(1))).reduce(min)
             lb += d
             if (lb < bsf) {
                 // 2 points at back
                 val y1: MDVector = normalize(candidate(start_index + clen - 2))
-                val d: Double = Array(dist(y1, query(qlen - 1)), dist(y0, query(qlen - 2)), dist(y1, query(qlen - 2))).reduce(min);
+                val d: Double = Array[Double](dist(y1, query(qlen - 1)), dist(y0, query(qlen - 2)), dist(y1, query(qlen - 2))).reduce(min);
                 lb += d
                 if (lb < bsf) {
                     // 3 points at front
                     val x2: MDVector = normalize(candidate(start_index + 2))
-                    val d: Double = Array(dist(x0, query(2)), dist(x1, query(2)), dist(x2, query(2)),
+                    val d: Double = Array[Double](dist(x0, query(2)), dist(x1, query(2)), dist(x2, query(2)),
                         dist(x2, query(1)), dist(x2, query(0))).reduce(min)
                     lb += d
                     if (lb < bsf) {
                         // 3 points at back
                         val y2: MDVector = normalize(candidate(start_index + clen - 3))
-                        val d: Double = Array(dist(y0, query(qlen - 3)), dist(y1, query(qlen - 3)), dist(y2, query(qlen - 3)),
+                        val d: Double = Array[Double](dist(y0, query(qlen - 3)), dist(y1, query(qlen - 3)), dist(y2, query(qlen - 3)),
                             dist(y2, query(qlen - 2)), dist(y2, query(qlen - 1))).reduce(min)
                         lb += d
                     }
@@ -148,7 +147,7 @@ object DTW {
      * @return cb Current bound at each position which will be used later for early abandoning
      * @return lb The Koegh lower bound of the DTW distance
      */
-    def LBKoegh(candidate: Array[MDVector], start_index: Int, order: Array[Int], upper_ordered: Array[MDVector], lower_ordered: Array[MDVector], mean: MDVector, std: MDVector, bsf: Double): Double = {
+    def LBKoegh(dist: (MDVector, MDVector) => Double)(candidate: Array[MDVector], start_index: Int, order: Array[Int], upper_ordered: Array[MDVector], lower_ordered: Array[MDVector], mean: MDVector, std: MDVector, bsf: Double): (Array[Double], Double) = {
         val len: Int = candidate.length
         val cb: Array[Double] = Array.ofDim[Double](len)
         var lb: Double = 0
@@ -178,7 +177,7 @@ object DTW {
      * @return cb Current bound at each position which will be used later for early abandoning
      * @return lb Lower bound of the DTW distance
      */
-    def LBKoegh2(upper: Array[MDVector], lower: Array[MDVector], query_ordered: Array[MDVector], order: Array[Int], mean: MDVector, std: MDVector, bsf: Double): Double = {
+    def LBKoegh2(dist: (MDVector, MDVector) => Double)(upper: Array[MDVector], lower: Array[MDVector], query_ordered: Array[MDVector], order: Array[Int], mean: MDVector, std: MDVector, bsf: Double): (Array[Double], Double) = {
         val len: Int = upper.length
         val cb: Array[Double] = Array.ofDim[Double](len)
         var lb: Double = 0

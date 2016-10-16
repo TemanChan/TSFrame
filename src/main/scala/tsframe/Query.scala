@@ -1,6 +1,6 @@
 package tsframe
 
-class OrderedQuery(val query: Array[MDVector]){
+class OrderedQuery(val query: Array[MDVector]) extends java.io.Serializable {
     val mean: MDVector = query.reduce(_ + _) / query.length
     val variance: MDVector = query.map(x => x * x).reduce(_ + _) / query.length - mean * mean
     val std: MDVector = variance.sqrt()

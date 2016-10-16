@@ -1,6 +1,6 @@
 package tsframe
 
-class CircularBuffer[T : reflect.ClassTag](val _capacity: Int){
+class CircularBuffer[T : reflect.ClassTag](val _capacity: Int) extends java.io.Serializable {
     val _values: Array[T] = Array.ofDim[T](_capacity)
 
     var _first: Int = 0

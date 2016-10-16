@@ -1,6 +1,6 @@
 package tsframe
 
-class MDVector(val _values: Array[Double]) extends Ordered[MDVector] { // Bug of Zeppelin or Spark? Error if the left curly bracket { is placed at the next line
+class MDVector(val _values: Array[Double]) extends java.io.Serializable with Ordered[MDVector] { // Bug of Zeppelin or Spark? Error if the left curly bracket { is placed at the next line
     val dimension: Int = _values.length
 
     def this(values: Double*) = this(values.toArray)
@@ -75,5 +75,6 @@ class MDVector(val _values: Array[Double]) extends Ordered[MDVector] { // Bug of
     }
 
     def magnitudeSquared: Double = _values.map(x => x * x).reduce(_ + _)
+    
+    override def toString = "[" + _values.mkString(",") + "]"
 }
-
